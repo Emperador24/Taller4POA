@@ -2,6 +2,7 @@ package com.javeriana.gestionnotas.service;
 
 import com.javeriana.gestionnotas.model.*;
 import com.javeriana.gestionnotas.repository.*;
+import com.javeriana.gestionnotas.exception.PorcentajeExceededException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -70,9 +71,12 @@ public class NotaService {
         }
         
         if (sumaPorcentajes + nota.getPorcentaje() > 100) {
-            throw new RuntimeException("La suma de porcentajes no puede superar el 100%. " +
-                "Porcentaje actual: " + sumaPorcentajes + "%, intentando agregar: " + 
-                nota.getPorcentaje() + "%");
+            // USA LA EXCEPCIÓN PERSONALIZADA
+            throw new PorcentajeExceededException(
+                String.format("La suma de porcentajes no puede superar el 100%%. " +
+                "Porcentaje actual: %d%%, intentando agregar: %d%%", 
+                sumaPorcentajes, nota.getPorcentaje())
+            );
         }
     }
     

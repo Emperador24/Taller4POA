@@ -2,6 +2,7 @@ package com.javeriana.gestionnotas.service;
 
 import com.javeriana.gestionnotas.model.*;
 import com.javeriana.gestionnotas.repository.*;
+import com.javeriana.gestionnotas.exception.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +27,7 @@ public class UsuarioService {
     
     public Usuario save(Usuario usuario) {
         if (usuarioRepository.existsByEmail(usuario.getEmail()) && usuario.getId() == null) {
-            throw new RuntimeException("El email ya está registrado");
+            throw new ValidationException("El email ya está registrado");
         }
         return usuarioRepository.save(usuario);
     }

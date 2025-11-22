@@ -2,6 +2,7 @@ package com.javeriana.gestionnotas.service;
 
 import com.javeriana.gestionnotas.model.Materia;
 import com.javeriana.gestionnotas.repository.MateriaRepository;
+import com.javeriana.gestionnotas.exception.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +27,7 @@ public class MateriaService {
     
     public Materia save(Materia materia) {
         if (materiaRepository.existsByNombre(materia.getNombre()) && materia.getId() == null) {
-            throw new RuntimeException("El nombre de la materia ya existe");
+            throw new ValidationException("El nombre de la materia ya existe");
         }
         return materiaRepository.save(materia);
     }
