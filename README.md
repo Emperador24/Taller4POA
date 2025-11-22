@@ -66,31 +66,15 @@ Taller4POA/
 - **Maven 3.6+**
 - Navegador web moderno (Chrome, Firefox, Edge)
 
-### Instalación y Ejecución
 
-#### Paso 1: Crear estructura de directorios
-
-```bash
-mkdir -p gestion-notas/src/main/java/com/javeriana/gestionnotas/{model,repository,service,controller,aspect,config,exception}
-mkdir -p gestion-notas/src/main/resources/static
-mkdir -p gestion-notas/src/test/java
-```
-
-#### Paso 2: Copiar archivos
-
-1. Coloca `pom.xml` en la raíz del proyecto
-2. Coloca `application.properties` en `src/main/resources/`
-3. Coloca las clases Java en sus respectivos paquetes
-4. Coloca `index.html` y `app.js` en `src/main/resources/static/`
-
-#### Paso 3: Compilar el proyecto
+#### Paso 1: Compilar el proyecto
 
 ```bash
 cd gestion-notas
 mvn clean install
 ```
 
-#### Paso 4: Ejecutar la aplicación
+#### Paso 2: Ejecutar la aplicación
 
 ```bash
 mvn spring-boot:run
