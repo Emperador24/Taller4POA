@@ -4,6 +4,18 @@ let usuarios = [];
 let materias = [];
 let notas = [];
 
+// Helper para fetch con credenciales
+async function fetchWithCredentials(url, options = {}) {
+    return fetch(url, {
+        ...options,
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    });
+}
+
 // Inicialización
 document.addEventListener('DOMContentLoaded', () => {
     checkSession();
@@ -13,7 +25,9 @@ document.addEventListener('DOMContentLoaded', () => {
 // Verificar sesión
 async function checkSession() {
     try {
-        const response = await fetch(`${API_URL}/auth/session`);
+        const response = await fetch(`${API_URL}/auth/session`, {
+            credentials: 'include'
+        });
         const data = await response.json();
         
         if (data.authenticated) {
@@ -36,6 +50,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         const response = await fetch(`${API_URL}/auth/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify({ email, contrasena })
         });
         
@@ -61,7 +76,10 @@ function showLoginError(message) {
 // Logout
 async function logout() {
     try {
-        await fetch(`${API_URL}/auth/logout`, { method: 'POST' });
+        await fetch(`${API_URL}/auth/logout`, { 
+            method: 'POST',
+            credentials: 'include'
+        });
         currentUser = null;
         document.getElementById('mainScreen').classList.add('hidden');
         document.getElementById('loginScreen').classList.remove('hidden');
@@ -87,6 +105,9 @@ function showMainScreen() {
         document.getElementById('tabUsuarios').classList.add('hidden');
         document.getElementById('btnCreateNota').classList.add('hidden');
         document.querySelector('.actions-column').classList.add('hidden');
+    } else if (currentUser.rol === 'Profesor') {
+        // Ocultar "Mi Promedio" para profesores
+        document.getElementById('tabPromedio').classList.add('hidden');
     }
     
     loadData();
@@ -103,35 +124,53 @@ async function loadData() {
 
 async function loadUsuarios() {
     try {
-        const response = await fetch(`${API_URL}/usuarios`);
+        const response = await fetch(`${API_URL}/usuarios`, {
+            credentials: 'include'
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
         usuarios = await response.json();
         renderUsuarios();
     } catch (error) {
-        showError('Error cargando usuarios');
+        console.error('Error cargando usuarios:', error);
+        showError('Error cargando usuarios: ' + error.message);
     }
 }
 
 async function loadMaterias() {
     try {
-        const response = await fetch(`${API_URL}/materias`);
+        const response = await fetch(`${API_URL}/materias`, {
+            credentials: 'include'
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
         materias = await response.json();
         renderMaterias();
         populateMateriaSelect();
     } catch (error) {
-        showError('Error cargando materias');
+        console.error('Error cargando materias:', error);
+        showError('Error cargando materias: ' + error.message);
     }
 }
 
 async function loadNotas() {
     try {
-        const response = await fetch(`${API_URL}/notas`);
+        const response = await fetch(`${API_URL}/notas`, {
+            credentials: 'include'
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
         notas = await response.json();
         renderNotas();
-        if (currentUser.rol === 'Alumno') {
+        if (currentUser && currentUser.rol === 'Alumno') {
             loadPromedio();
         }
     } catch (error) {
-        showError('Error cargando notas');
+        console.error('Error cargando notas:', error);
+        showError('Error cargando notas: ' + error.message);
     }
 }
 
@@ -217,7 +256,7 @@ function showTab(tabName) {
 // Promedio
 async function loadPromedio() {
     try {
-        const response = await fetch(`${API_URL}/notas/promedio/${currentUser.id}`);
+        const response = await fetchWithCredentials(`${API_URL}/notas/promedio/${currentUser.id}`);
         const data = await response.json();
         
         const content = document.getElementById('promedioContent');
